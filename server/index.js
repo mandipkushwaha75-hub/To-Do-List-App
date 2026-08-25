@@ -1,36 +1,38 @@
 const express = require("express");
 const mongoose = require("mongoose");
-require("dotenv").config({ path: "./.env" });
+const cors = require("cors");
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const taskRoutes = require("./routes/TaskRoute");
+const authRoutes = require("./routes/AuthRoute");
 
 const app = express();
 
-
 // ==========================================
-// GLOBAL JSON MIDDLEWARE
+// MIDDLEWARE CONFIGURATION
 // ==========================================
+app.use(cors());
 app.use(express.json());
-
 
 // ==========================================
 // HOME ROUTE
 // ==========================================
 app.get("/", (req, res) => {
   res.status(200).json({
-    message: "Task REST API is running",
+    message: "Task REST API is running cleanly",
+    status: "online",
   });
 });
 
-
 // ==========================================
-// TASK ROUTES
+// ROUTES
 // ==========================================
+app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
-
 // ==========================================
-// 404 ROUTE
+// 404 ROUTE HANDLER
 // ==========================================
 app.use((req, res) => {
   res.status(404).json({
@@ -38,13 +40,12 @@ app.use((req, res) => {
   });
 });
 
-
 // ==========================================
 // GLOBAL ERROR HANDLER
 // Must be placed after all routes
 // ==========================================
 app.use((err, req, res, next) => {
-  console.error("Server error:", err.message);
+  console.error("Server error:", err);
 
   if (res.headersSent) {
     return next(err);
@@ -62,21 +63,27 @@ app.use((err, req, res, next) => {
     });
   }
 
+  if (err.code === 11000) {
+    return res.status(400).json({
+      message: "An account with this email address already exists",
+    });
+  }
+
   return res.status(500).json({
-    message: "Internal Server Error",
+    message: err.message || "Internal Server Error",
   });
 });
-
 
 // ==========================================
 // DATABASE CONNECTION AND SERVER START
 // ==========================================
 const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL || "mongodb://localhost:27017/todo_db";
 
 mongoose
-  .connect(process.env.MONGO_URL)
+  .connect(MONGO_URI)
   .then(() => {
-    console.log("Successfully connected to MongoDB");
+    console.log("Successfully connected to MongoDB at", MONGO_URI);
 
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);

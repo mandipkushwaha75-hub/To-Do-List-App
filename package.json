@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "accepts": "^2.0.0",
+    "bcryptjs": "^3.0.3",
     "body-parser": "^2.3.0",
     "bson": "^7.3.2",
     "bytes": "^3.1.2",
@@ -14,6 +15,7 @@
     "content-type": "^1.0.5",
     "cookie": "^0.7.2",
     "cookie-signature": "^1.2.2",
+    "cors": "^2.8.6",
     "debug": "^4.4.3",
     "depd": "^2.0.0",
     "dotenv": "^17.4.2",
@@ -40,6 +42,7 @@
     "inherits": "^2.0.4",
     "ipaddr.js": "^1.9.1",
     "is-promise": "^4.0.0",
+    "jsonwebtoken": "^9.0.3",
     "kareem": "^3.3.0",
     "math-intrinsics": "^1.1.0",
     "media-typer": "^1.1.1",
@@ -86,6 +89,11 @@
     "wrappy": "^1.0.2"
   },
   "scripts": {
+    "start": "node server/index.js",
+    "server": "node server/index.js",
+    "backend": "node server/index.js",
+    "frontend": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
